@@ -36,16 +36,34 @@ def taxonomy_filter(tag):
     return ':' in tag.text and tag.name == 'td'
 
 filtered = infobox.find_all(taxonomy_filter)
-print(filtered)
+# print(filtered)
 
 for tag in filtered:
     sibling = tag.next_sibling.next_sibling
 
     taxonomy[tag.text.strip().replace(':', '')] = sibling.text.strip()
 
-print(taxonomy)
+# print(taxonomy)
 
 def another_taxonomy_filter(tag):
     return tag.name == 'tr' and len(list(tag.children)) == 4
 
-print('Second method: ', infobox.find_all(another_taxonomy_filter))
+# print('Second method: ', infobox.find_all(another_taxonomy_filter))
+
+p_content = soup.find_all('p')
+# print(p_content)
+
+body_links = []
+for p in p_content:
+    body_links += p.find_all('a')
+
+print(body_links, '\n')
+
+body_links = list(filter(lambda a: '#cite' not in a['href'], body_links))
+print(body_links, '\n')
+
+links = {}
+for a in body_links:
+    links[a['title']] = a['href'] = 'https://en.wikipedia.org' + a['href']
+
+print(links, '\n')
