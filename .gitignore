@@ -126,3 +126,5 @@ dmypy.json
 .idea/
 
 html_docs/bristlecone.html
+
+html_docs/image.png

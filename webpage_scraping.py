@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import re
+import os
 
 # GET the URL content and store it into a local file as an html-file
 def get_html(url, path):
@@ -12,10 +13,13 @@ print(' ')
 
 path = "./html_docs/bristlecone.html"
 url = "https://en.wikipedia.org/wiki/Bristlecone_pine"
-# get_html(url, path)
+
+if not os.path.exists(path):
+    get_html(url, path)
 
 with open(path, 'r', encoding="utf-8") as f:
     html = f.read()
+
 
 soup = BeautifulSoup(html, 'html.parser')
 # print(soup.title)
@@ -57,13 +61,36 @@ body_links = []
 for p in p_content:
     body_links += p.find_all('a')
 
-print(body_links, '\n')
+# print(body_links, '\n')
 
 body_links = list(filter(lambda a: '#cite' not in a['href'], body_links))
-print(body_links, '\n')
+# print(body_links, '\n')
 
 links = {}
 for a in body_links:
     links[a['title']] = a['href'] = 'https://en.wikipedia.org' + a['href']
 
-print(links, '\n')
+# print(links, '\n')
+
+imgs = soup.find_all('img')
+# print(imgs)
+
+# for i in imgs:
+#     if 'class' in i.attrs:
+#         print(i['class'])
+#     else:
+#         print(i)
+
+imgs = list(filter(lambda img: 'class' in img.attrs, imgs))
+imgs = list(filter(lambda img: img['class'][0] == 'mw-file-element', imgs))
+for img in imgs:
+    print(img['src'])
+
+def download_image(url, path):
+    response = requests.get(url)
+    with open(path, 'wb') as f:
+        f.write(response.content)
+
+img_path = "./html_docs/image.png"
+if not os.path.exists(img_path):
+    download_image('https:' + imgs[0]['src'], img_path)
